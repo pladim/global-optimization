@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <memory>
 
@@ -45,40 +46,45 @@ int main() {
 	double diag{ static_cast<double>(MAX_POWER_THREE) };
 	eps = eps * sqrt(static_cast<double>(dim)) * diag;
 
-	//while (globalObj < 5.0) {
-	//	while (globalCst < 5.0) {
-	//		while (localObj < 3.0) {
-	//			while (localCst < 3.0) {
-	//				std::cout << "TASK\t" << globalObj << " " << globalCst << " " << localObj << " " << localCst << endl;
-	//				Parameters param{ dim, cst, dep, localObj, localCst, globalObj, globalCst, delta, beta * diag, eps, 1.0, 1.0 };
-	//				std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodT", dim, cst, param, testProblem5));
-	//				solver->solve();
-	//				cout << "\n\n";
-	//				
-	//				localCst += 0.5;
-	//			}
+	/*std::ofstream _log;
+	_log.open("D:\\materials\\projects\\visualize_hyperinterval\\status.txt", std::ios::app);
+	if (_log.is_open()) {
+		while (globalObj < 5.0) {
+			while (globalCst < 5.0) {
+				while (localObj < 3.0) {
+					while (localCst < 3.0) {
+						_log << "TASK\t" << globalObj << " " << globalCst << " " << localObj << " " << localCst << endl;
+						Parameters param{ dim, cst, dep, localObj, localCst, globalObj, globalCst, delta, beta * diag, eps, 1.0, 1.0 };
+						std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodT", dim, cst, param, testProblem1));
+						solver->solve();
+						_log << solver->get_min() << std::endl;
+						cout << "\n\n";
 
-	//			localCst = 1.5;
-	//			localObj += 0.5;
-	//		}
+						localCst += 0.5;
+					}
 
-	//		localCst = 1.5;
-	//		localObj = 1.5;
-	//		globalCst += 0.5;
-	//	}
+					localCst = 1.5;
+					localObj += 0.5;
+				}
 
-	//	localCst = 1.5;
-	//	localObj = 1.5;
-	//	globalCst = 2.5;
-	//	globalObj += 0.5;
-	//}
+				localCst = 1.5;
+				localObj = 1.5;
+				globalCst += 0.5;
+			}
+
+			localCst = 1.5;
+			localObj = 1.5;
+			globalCst = 2.5;
+			globalObj += 0.5;
+		}
+	}*/
 
 	Parameters param{ dim, cst, dep, localObj, localCst, globalObj, globalCst, delta, beta * diag, eps, 1.0, 1.0 };
-	std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodT", dim, cst, param, testProblem1));
+	std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodS", dim, cst, param, testProblem2));
 
 	solver->solve();
 	solver->write_generated_points();
 	solver->write_generated_intervals();
 
-	return 0;
+	return EXIT_SUCCESS;
 }

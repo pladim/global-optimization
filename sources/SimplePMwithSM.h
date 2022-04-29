@@ -3,6 +3,7 @@
 
 #include <Python.h>
 
+#include "ortools/linear_solver/linear_solver.h"
 #include "SimplePM.h"
 
 class SimplePMwithSM : public SimplePM {
