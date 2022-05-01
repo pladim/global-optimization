@@ -18,6 +18,7 @@ DivideByThree::DivideByThree(const uint& dimension,
 	_current_minimum(std::numeric_limits<double>::max()),
 	_id_minimum(0),
 	_divided_axis(0),
+	_max_it(parameters._max_it),
 	_iteration(0) {
 	Point::_dimension = _dimension;
 	Point::_constraints = _constraints;

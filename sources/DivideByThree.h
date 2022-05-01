@@ -39,6 +39,8 @@ protected:
     uint _id_minimum;
     // какую ось будем делить
     uint _divided_axis;
+    // максимальное число итераций
+    uint _max_it;
     // число итераций
     uint _iteration;
 protected:

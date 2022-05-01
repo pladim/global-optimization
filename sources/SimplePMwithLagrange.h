@@ -1,12 +1,12 @@
 #ifndef SIMPLEPMWITHLAGRANGE_H
 #define SIMPLEPMWITHLAGRANGE_H
 
-#include "SimplePM.h"
+#include "Lagrange.h"
 
-class SimplePMwithLagrange : public SimplePM {
+class SimplePMwithLagrange : public Lagrange {
 private:
-	void calculate_localLipshConst(const uint& id_hyp) override;
 	void calculate_characteristic(const uint& id_hyp) override;
+	void give_borders(double& l, double& r, Hyperinterval& hyp);
 public:
 	SimplePMwithLagrange(const uint& dimension,
 						 const uint& constraints,

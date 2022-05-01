@@ -1,45 +1,10 @@
-#include <iostream>
 #include "SimplePMwithLagrange.h"
 
 SimplePMwithLagrange::SimplePMwithLagrange(const uint& dimension,
 										   const uint& constraints,
 										   Parameters& parameters,
 										   Problem& problem) :
-	SimplePM(dimension, constraints, parameters, problem) {}
-
-void SimplePMwithLagrange::calculate_localLipshConst(const uint& id_hyp) {
-	Hyperinterval& hyp1 = _intervals[id_hyp];
-	Hyperinterval& hyp2 = _intervals[_generated_intervals - 2];
-	Hyperinterval& hyp3 = _intervals[_generated_intervals - 1];
-
-	double fa, fv, fu, fb;
-	double dist = 0.0;
-	for (uint i = 0; i < _dimension; ++i)
-		dist = dist +
-			  ((double)_coords[hyp1.get_coordA() + i] - 
-			   (double)_coords[hyp3.get_coordB() + i]) * 
-			  ((double)_coords[hyp1.get_coordA() + i] - 
-			   (double)_coords[hyp3.get_coordB() + i]);
-
-	for (uint i = 0; i < _constraints + 1; ++i) {
-		fa = _evaluations[hyp1.get_evalA() + i];
-		fv = _evaluations[hyp2.get_evalA() + i];
-		fu = _evaluations[hyp2.get_evalB() + i];
-		fb = _evaluations[hyp3.get_evalB() + i];
-		_localLipshEval[i] = 4 * (fb - fu - fv + fa) / dist;
-		double conv = _localLipshEval[i] * (double)MAX_POWER_THREE * (double)MAX_POWER_THREE;
-	}
-
-	hyp1.update_localLipQueues(_localLipshEval,
-							   _parameters._delta /
-							   ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE));
-	hyp2.update_localLipQueues(_localLipshEval,
-							   _parameters._delta /
-							   ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE));
-	hyp3.update_localLipQueues(_localLipshEval,
-							   _parameters._delta /
-							   ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE));
-}
+	Lagrange(dimension, constraints, parameters, problem) {}
 
 void SimplePMwithLagrange::calculate_characteristic(const uint& id_hyp) {
 	if (_intervals[id_hyp].get_divisions() == 0) return;
@@ -85,6 +50,42 @@ void SimplePMwithLagrange::calculate_characteristic(const uint& id_hyp) {
 			charact2 = charact2 + 0.5 * mixed_LipshEval * (right * right - e * e);
 
 			hyp.set_charact(std::min(charact1, charact2));
+		}
+	}
+}
+
+void SimplePMwithLagrange::give_borders(double& l,
+										double& r,
+										Hyperinterval& hyp) {
+	double a = 0.0;
+	double b = 0.0;
+	double c = 0.0;
+	double fa = 0.0;
+	double fb = 0.0;
+	double M = 0.0;
+	double e = r;
+
+	for (uint i = 1; i < _constraints + 1; ++i) {
+		M = mixedLipEval(hyp, i);
+		fa = _evaluations[hyp.get_evalA() + i];
+		fb = _evaluations[hyp.get_evalB() + i];
+
+		a = 0.5 * M;
+		b = 0.5 * (fb - fa) / e;
+		c = 0.5 * (fb + fa - M * e * e);
+
+		if (b * b - 4 * a * c >= 0) {
+			fa = (-b - sqrt(b * b - 4 * a * c)) * 0.5 / a;
+			fb = (-b + sqrt(b * b - 4 * a * c)) * 0.5 / a;
+
+			if (fa > fb) std::swap(fa, fb);
+			if ((fa >= l) && (fa <= r)) l = fa;
+			if ((fb <= r) && (fb >= l)) r = fb;
+		}
+		else {
+			l = e;
+			r = -e;
+			return;
 		}
 	}
 }

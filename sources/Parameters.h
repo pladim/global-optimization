@@ -7,6 +7,7 @@ struct Parameters {
 	uint _dimension;
 	uint _constraints;
 	uint _queueDepth;
+	uint _max_it;
 	GainLipshConstant _gainLocalObj;
 	GainLipshConstant _gainLocalCst;
 	GainLipshConstant _gainGlobalObj;

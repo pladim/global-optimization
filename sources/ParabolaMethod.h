@@ -1,9 +1,9 @@
-#ifndef SIMPLEPM_H
-#define SIMPLEPM_H
+#ifndef PARABOLAMETHOD_H
+#define PARABOLAMETHOD_H
 
 #include "DivideByThree.h"
 
-class SimplePM : public DivideByThree {
+class ParabolaMethod : public DivideByThree {
 protected:
 	bool _areAllCharInfty;
 	bool _doesGlobalChange;
@@ -16,16 +16,14 @@ protected:
 	void update_all_charact();
 	uint optimal_to_trisect() override;
 	uint iterate(const uint& id_hyp) override;
-protected:
-	void give_borders(double& l, double& r, Hyperinterval& hyp);
 	void balance(double& _lipshConst) const;
 public:
-	SimplePM(const uint& dimension,
-			 const uint& constraints,
-			 Parameters& parameters,
-			 Problem& problem);
+	ParabolaMethod(const uint& dimension,
+				   const uint& constraints,
+				   Parameters& parameters,
+				   Problem& problem);
 	void solve() override;
-	~SimplePM() {}
+	virtual ~ParabolaMethod() {}
 };
 
-#endif SIMPLEPM_H
+#endif // PARABOLAMETHOD_H

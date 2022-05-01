@@ -1,47 +1,10 @@
-#include <iostream>
 #include "SimplePMwithConj.h"
 
 SimplePMwithConj::SimplePMwithConj(const uint& dimension,
 								   const uint& constraints,
 								   Parameters& parameters,
 							 	   Problem& problem) :
-	SimplePM(dimension, constraints, parameters, problem) {}
-
-void SimplePMwithConj::calculate_localLipshConst(const uint& id_hyp) {
-	Hyperinterval& hyp1 = _intervals[id_hyp];
-	Hyperinterval& hyp2 = _intervals[_generated_intervals - 2];
-	Hyperinterval& hyp3 = _intervals[_generated_intervals - 1];
-
-	uint index = 20 - (hyp1.get_divisions() - 1) / _dimension;
-	uint j = hyp1.get_previous_axis();
-	double h2 = HYPER_INTERVAL_SIDE_LENGTHS[index];
-	double h1 = sqrt(j * h2 * h2 / 9.0 + (_dimension - j - 1) * h2 * h2);
-
-	double e1 = 0.5 * sqrt(h1 * h1 + h2 * h2 / 9.0);
-	double e2 = 0.5 * sqrt(h1 * h1 + h2 * h2);
-
-	for (uint i = 0; i < _constraints + 1; ++i) {
-		_localLipshEval[i] = _evaluations[hyp1.get_evalA() + i]
-							 + _evaluations[hyp3.get_evalB() + i];
-		_localLipshEval[i] -= (_evaluations[hyp2.get_evalA() + i]
-							  + _evaluations[hyp2.get_evalB() + i]);
-
-		if (i == 0)
-			_localLipshEval[i] = std::abs(_localLipshEval[i] / (e2 * e2 - e1 * e1));
-		else
-			_localLipshEval[i] = std::abs(_localLipshEval[i] / (e2 * e2 - e1 * e1));
-	}
-
-	hyp1.update_localLipQueues(_localLipshEval,
-							   _parameters._delta /
-							   ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE));
-	hyp2.update_localLipQueues(_localLipshEval,
-							   _parameters._delta /
-							   ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE));
-	hyp3.update_localLipQueues(_localLipshEval,
-							   _parameters._delta /
-							   ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE));
-}
+	Conjugate(dimension, constraints, parameters, problem) {}
 
 void SimplePMwithConj::calculate_characteristic(const uint& id_hyp) {
 	if (_intervals[id_hyp].get_divisions() == 0) return;
@@ -87,6 +50,42 @@ void SimplePMwithConj::calculate_characteristic(const uint& id_hyp) {
 			charact2 = charact2 + 0.5 * mixed_LipshEval * (right * right - e * e);
 
 			hyp.set_charact(std::min(charact1, charact2));
+		}
+	}
+}
+
+void SimplePMwithConj::give_borders(double& l,
+									double& r,
+									Hyperinterval& hyp) {
+	double a = 0.0;
+	double b = 0.0;
+	double c = 0.0;
+	double fa = 0.0;
+	double fb = 0.0;
+	double M = 0.0;
+	double e = r;
+
+	for (uint i = 1; i < _constraints + 1; ++i) {
+		M = mixedLipEval(hyp, i);
+		fa = _evaluations[hyp.get_evalA() + i];
+		fb = _evaluations[hyp.get_evalB() + i];
+
+		a = 0.5 * M;
+		b = 0.5 * (fb - fa) / e;
+		c = 0.5 * (fb + fa - M * e * e);
+
+		if (b * b - 4 * a * c >= 0) {
+			fa = (-b - sqrt(b * b - 4 * a * c)) * 0.5 / a;
+			fb = (-b + sqrt(b * b - 4 * a * c)) * 0.5 / a;
+
+			if (fa > fb) std::swap(fa, fb);
+			if ((fa >= l) && (fa <= r)) l = fa;
+			if ((fb <= r) && (fb >= l)) r = fb;
+		}
+		else {
+			l = e;
+			r = -e;
+			return;
 		}
 	}
 }
