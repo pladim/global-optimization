@@ -3,8 +3,131 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <Windows.h>
 
 #include "synonymous_types.h"
+
+struct GKLSGParametersPacket {
+	int numberProblem; // Было: targetFunction;
+	int dimention; // Переставлено с первой позиции в списке !
+	int maxNumberConstraints;    // Было: numberConstraints
+	int numberLocalMinimasMinimandFunction;    // Было: numberLocalMinimasSourceFunction
+	int numberLocalMinimasConstraintFunction;
+	int minNumberActiveConstraints;
+	int maxNumberActiveConstraints;
+	double distanceFromGlobalMinimizerToParaboloidMinimizerMinimandFunction; //Новое поле !
+	double minDistanceFromMinimizerToParaboloidMinimizer;
+	double maxDistanceFromMinimizerToParaboloidMinimizer;
+	double radiusAttractionRegionGlobalMinimizerMminimandFunction;  // Новое поле !
+	double minRadiusAttractionRegionGlobalMinimizer;
+	double maxRadiusAttractionRegionGlobalMinimizer;
+	double valueGlobalMinimumMinimandFunction;    // Новое поле !
+	double minValueGlobalMinimumConstraints;     // Было: minValueGlobalMinimum
+	double maxValueGlobalMinimumConstraints;     // Было: maxValueGlobalMinimum
+	double minAnglePhi;
+	double maxAnglePhi;
+	double maxPower;  // Было: maxP
+	double probabilityConvexityConstraints;  // Было: beta
+	double minNu0;   // Новое поле !
+	double maxNu0;  // Было: nu0
+	double minDeltaGlobal;  // Новое поле !
+	double maxDeltaGlobal;  // Было: deltaGlobal
+	double deltaLocal;  // Переставлено с последней позиции в списке !
+	double maxLambda;
+	double probabilityGglobalMinimumIsOutsidePermissibleRegion;  //Было:  globalBoundaryRate
+	double relativeMeasurePermissibleRegion;    // Было:  measureAdmissibleRegion;
+	int functionType;
+};
+
+struct SummaryPacket {
+	wchar_t* summary;
+	int length;
+};
+
+typedef int (WINAPIV* LPFN_Init) ();
+typedef int (WINAPIV* LPFN_SetParam) (GKLSGParametersPacket*);
+typedef int (WINAPIV* LPFN_Generate) (int);
+typedef double (WINAPIV* LPFN_Solution) ();
+typedef double (WINAPIV* LPFN_Obj) (double*);
+typedef double (WINAPIV* LPFN_Cst) (double*, int);
+typedef int (WINAPIV* LPFN_Free) ();
+typedef int (WINAPIV* LPFN_Dim) ();
+typedef int (WINAPIV* LPFN_Cond) ();
+typedef int (WINAPIV* LPFN_Sum) (SummaryPacket* packet);
+
+HMODULE hDLL;
+
+void init_dll() {
+	hDLL = LoadLibrary(L"GKLSGLibrary.dll");
+	if (hDLL == NULL) throw;
+
+	GKLSGParametersPacket __parameters{
+		1,
+		2,
+		4,
+		10,
+		20,
+		2,
+		2,
+		0.9,
+		0.2,
+		1.0,
+		0.2,
+		0.1,
+		0.3,
+		-1.0,
+		-2.9,
+		-2.1,
+		0.2,
+		0.8,
+		2.0,
+		0.3,
+		0.05,
+		0.1,
+		0.01,
+		0.8,
+		0.001,
+		0.4,
+		0.9,
+		0.1,
+		1
+	};
+
+	LPFN_Init __Init = (LPFN_Init)GetProcAddress(hDLL, "Init");
+	LPFN_SetParam   __SetGKLSGParameters = (LPFN_SetParam)GetProcAddress(hDLL, "SetGKLSGParameters");
+	LPFN_Sum __GetGKLSGSummary = (LPFN_Sum)GetProcAddress(hDLL, "GetGKLSGSummary");
+	LPFN_Cond __GetCountCondition = (LPFN_Cond)GetProcAddress(hDLL, "GetCountCondition");
+	LPFN_Generate __GenerateGKLSG_Task = (LPFN_Generate)GetProcAddress(hDLL, "GenerateGKLSG_Task");
+	LPFN_Solution __GetGKLSGSolution = (LPFN_Solution)GetProcAddress(hDLL, "GetGKLSGSolution");
+
+	__Init();
+	__SetGKLSGParameters(&__parameters);
+
+	for (int i = 1; i < __GetCountCondition() + 2; ++i)
+		__GenerateGKLSG_Task(i);
+
+	SummaryPacket __summary{ nullptr, 0 };
+	__GetGKLSGSummary(&__summary);
+}
+
+void deinit_dll() {
+	FreeLibrary(hDLL);
+}
+
+FunctionsValues& test_dll(FunctionsValues& res, const CoordinatesValues& x)
+{
+	LPFN_Obj __TargetFunction = (LPFN_Obj)GetProcAddress(hDLL, "TargetFunction");
+	LPFN_Cst __ConditionFunction  = (LPFN_Cst)GetProcAddress(hDLL, "ConditionFunction");
+	LPFN_Cond __GetCountCondition = (LPFN_Cond)GetProcAddress(hDLL, "GetCountCondition");
+
+	res[0] = __TargetFunction(x.begin()._Ptr);
+	uint cst = __GetCountCondition();
+
+	for (uint i = 1; i < cst + 1; ++i)
+		res[i] = __ConditionFunction(x.begin()._Ptr, i);
+
+	return res;
+}
 
 FunctionsValues& f(FunctionsValues& res, const CoordinatesValues& x)
 {
