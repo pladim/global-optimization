@@ -14,17 +14,7 @@
 #include "SolverFactory.h"
 
 int main() {
-	//LPFN_Generate __GenerateGKLSG_Task = (LPFN_Generate)GetProcAddress(hDLL, "GenerateGKLSG_Task");
-	//LPFN_Free __FreeResources		 = (LPFN_Free)GetProcAddress(hDLL, "FreeResources");
-	// LPFN_Obj __TargetFunction	 = (LPFN_Obj)GetProcAddress(hDLL, "TargetFunction");
-	// LPFN_Cst __ConditionFunction  = (LPFN_Cst)GetProcAddress(hDLL, "ConditionFunction");
-	// LPFN_Dim __GetDim			 = (LPFN_Dim)GetProcAddress(hDLL, "GetDim");
-	// LPFN_Cond __GetCountCondition  = (LPFN_Cond)GetProcAddress(hDLL, "GetCountCondition");
-	// LPFN_Solution __GetGKLSGSolution = (LPFN_Solution)GetProcAddress(hDLL, "GetGKLSGSolution");
-
 	init_dll();
-
-	// __GetGKLSGSummary(&__summary);
 
 	uint dim_t1{ 2 };
 	uint cst_t1{ 3 };
@@ -37,8 +27,8 @@ int main() {
 	uint dim_t5{ 2 };
 	uint cst_t5{ 1 };
 
-	LPFN_Dim __GetDim = (LPFN_Dim)GetProcAddress(hDLL, "GetDim");
-	LPFN_Cond __GetCountCondition  = (LPFN_Cond)GetProcAddress(hDLL, "GetCountCondition");
+	GKLSG_Int_Void __GetDim = (GKLSG_Int_Void)GetProcAddress(hDLL, "GetDim");
+	GKLSG_Int_Void __GetCountCondition  = (GKLSG_Int_Void)GetProcAddress(hDLL, "GetCountCondition");
 
 	uint dep{ 5 };
 	Problem testProblem(2, 1, { 0.0, 0.0 }, { 1.0, 1.0 }, &f);
@@ -48,10 +38,46 @@ int main() {
 	Problem testProblem4(dim_t4, cst_t4, { -1.0, -1.0 }, { 1.0, 1.0 }, &task4);
 	Problem testProblem5(dim_t5, cst_t5, { -10, -10 }, { 10, 10 }, &task5);
 	Problem testProblem6(dim_t3, cst_t3, { 0, 0 }, { 2 * M_PI, 2 * M_PI }, &task6);
-	Problem testDll(__GetDim(), __GetCountCondition(), {-1, -1}, {1, 1}, &test_dll);
 
-	uint dim{ static_cast<uint>(__GetDim())};
-	uint cst{ static_cast<uint>(__GetCountCondition())};
+	for (int i = 1; i < 8; ++i) {
+		generate_task(i);
+		CoordinatesValues solution_point{ get_minimum_point() };
+		double solution_minimum = global_minimum(solution_point);
+		std::cout << "Global minimum is " << solution_minimum << std::endl;
+		std::cout << "was reached at the point:" << std::endl;
+
+		for (auto& elem : solution_point)
+			std::cout << elem << std::endl;
+
+		uint dim{ static_cast<uint>(__GetDim())};
+		uint cst{ static_cast<uint>(__GetCountCondition())};
+
+		Problem testDll(dim, cst, { -1, -1 }, { 1, 1 }, &test_dll);
+
+		uint max_iter{ 1500 };
+		double globalObj{ 4.0 };
+		double globalCst{ 4.0 };
+		double localObj{ 2.5 };
+		double localCst{ 2.5 };
+		double delta{ 1e-10 };
+		double beta{ 0.4 };
+		double eps{ 1e-9 };
+		double diag{ static_cast<double>(MAX_POWER_THREE) };
+		eps = eps * sqrt(static_cast<double>(dim)) * diag;
+
+		Parameters param{ dim, cst, dep, max_iter, localObj, localCst, globalObj, globalCst, delta, beta * diag, eps, 1.0, 1.0 };
+		std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodT", dim, cst, param, testDll));
+
+		solver->solve();
+		if (i == 7) {
+			solver->write_generated_points();
+			solver->write_generated_intervals();
+		}
+		std::cout << std::endl;
+	}
+
+	uint dim{ dim_t5 };
+	uint cst{ cst_t5 };
 	uint max_iter{ 500 };
 	double globalObj{ 4.0 };
 	double globalCst{ 4.0 };
@@ -96,12 +122,12 @@ int main() {
 		}
 	}*/
 
-	Parameters param{ dim, cst, dep, max_iter, localObj, localCst, globalObj, globalCst, delta, beta * diag, eps, 1.0, 1.0 };
-	std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodS", dim, cst, param, testDll));
+	//Parameters param{ dim, cst, dep, max_iter, localObj, localCst, globalObj, globalCst, delta, beta * diag, eps, 1.0, 1.0 };
+	//std::shared_ptr<DivideByThree> solver(create_solver("SimplexMethodS", dim, cst, param, testProblem5));
 
-	solver->solve();
-	solver->write_generated_points();
-	solver->write_generated_intervals();
+	//solver->solve();
+	//solver->write_generated_points();
+	//solver->write_generated_intervals();
 
 	deinit_dll();
 	return EXIT_SUCCESS;
