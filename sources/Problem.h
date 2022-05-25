@@ -16,6 +16,8 @@ class Problem {
 	CoordinatesValues _decoded_point;
 	// 
 	FunctionsValues _function_values;
+	// истинная точка
+	CoordinatesValues _true_min;
 private:
 	// вычислить функцию в точке для вещественных координат
 	FunctionsValues& f(const CoordinatesValues& out);
@@ -29,6 +31,8 @@ public:
 	// расшифровать координаты
 	CoordinatesValues& decode_coordinates(const EncodedCoordinates& out);
 	CoordinatesValues& decode_coordinates01(const EncodedCoordinates& out);
+	void set_true_minimum(const CoordinatesValues& out);
+	CoordinatesValues get_true_minimum() { return _true_min; }
 	// вычислить значений целевой функции и ограничений
 	FunctionsValues& operator()(const EncodedCoordinates& out);
 	~Problem() {}

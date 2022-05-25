@@ -1,12 +1,12 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#define _USE_MATH_DEFINES
-#include <cmath>
 #include <Windows.h>
 
 #include "synonymous_types.h"
 #include "helpful_structs.h"
+
+const double _PI = 3.14159265358979323846;
 
 typedef int		(WINAPIV* GKLSG_Int_Void) ();
 typedef double	(WINAPIV* GKLSG_Double_Void) ();
@@ -51,8 +51,8 @@ void init_dll() {
 		0.001,
 		0.4,
 		0.9,
-		0.1,
-		1
+		0.03,
+		2
 	};
 
 	GKLSG_Int_Void __Init = (GKLSG_Int_Void)GetProcAddress(hDLL, "Init");
@@ -119,7 +119,7 @@ FunctionsValues& f(FunctionsValues& res, const CoordinatesValues& x)
 }
 
 FunctionsValues& g(FunctionsValues& res, const CoordinatesValues& x) {
-	res[0] = 0.01 * (x[0] * x[1] + (x[0] - M_PI) * (x[0] - M_PI) + 3 * (x[1] - M_PI) * (x[1] - M_PI));
+	res[0] = 0.01 * (x[0] * x[1] + (x[0] - _PI) * (x[0] - _PI) + 3 * (x[1] - _PI) * (x[1] - _PI));
 	res[0] = res[0] - sin(x[0]) * sin(x[0]) * sin(2 * x[1]) * sin(2 * x[1]);
 	res[1] = (x[0] - 0.1) * (x[0] - 0.1) + (x[1] - 0.8) * (x[1] - 0.8);
 	return res;
@@ -134,7 +134,7 @@ FunctionsValues& task1(FunctionsValues& res, const CoordinatesValues& x) {
 	res[1] = 0.001 * ((x[0] - 2.2) * (x[0] - 2.2) +
 		(x[1] - 1.2) * (x[1] - 1.2) - 2.25);
 	res[2] = 100 * (1 - ((x[0] - 2.0) / 1.2) * ((x[0] - 2.0) / 1.2) - 0.25 * x[1] * x[1]);
-	res[3] = 10 * (x[1] - 1.5 - 1.5 * sin(2 * M_PI * (x[0] - 1.75)));
+	res[3] = 10 * (x[1] - 1.5 - 1.5 * sin(2 * _PI * (x[0] - 1.75)));
 	return res;
 }
 
@@ -150,9 +150,9 @@ FunctionsValues& task2(FunctionsValues& res, const CoordinatesValues& x) {
 }
 
 FunctionsValues& task3(FunctionsValues& res, const CoordinatesValues& x) {
-	res[0] = 0.01 * (x[0] * x[1] + (x[0] - M_PI) * (x[0] - M_PI) + 3 * (x[1] - M_PI) * (x[1] - M_PI));
+	res[0] = 0.01 * (x[0] * x[1] + (x[0] - _PI) * (x[0] - _PI) + 3 * (x[1] - _PI) * (x[1] - _PI));
 	res[0] = res[0] - sin(x[0]) * sin(x[0]) * sin(2 * x[1]) * sin(2 * x[1]);
-	res[1] = 6 - (x[0] - M_PI + 0.1) * (x[0] - M_PI + 0.1);
+	res[1] = 6 - (x[0] - _PI + 0.1) * (x[0] - _PI + 0.1);
 	res[1] = res[1] - (2 * sin(x[1]) + 0.2) * (2 * sin(x[1]) + 0.2);
 
 	return res;
@@ -175,14 +175,14 @@ FunctionsValues& task5(FunctionsValues& res, const CoordinatesValues& x) {
 	double next = 0;
 
 	next = 1 + 0.25 * (x[0] - 1);
-	res[0] = 10 * sin(M_PI * next) * sin(M_PI * next);
+	res[0] = 10 * sin(_PI * next) * sin(_PI * next);
 	for (uint i = 0; i < x.size() - 2; ++i) {
 		prev = next;
 		next = 1 + 0.25 * (x[i + 1] - 1);
-		res[0] = res[0] + (prev - 1) * (prev - 1) * (1 + 10 * sin(M_PI * next) * sin(M_PI * next));
+		res[0] = res[0] + (prev - 1) * (prev - 1) * (1 + 10 * sin(_PI * next) * sin(_PI * next));
 	}
 	res[0] = res[0] + (next - 1) * (next - 1);
-	res[0] = res[0] * M_PI / x.size();
+	res[0] = res[0] * _PI / x.size();
 
 	res[1] = 0.4 - 10 * (x[0] - 1.1) * (x[0] - 1.1);
 	for (uint i = 1; i < x.size(); ++i)
@@ -192,9 +192,9 @@ FunctionsValues& task5(FunctionsValues& res, const CoordinatesValues& x) {
 }
 
 FunctionsValues& task6(FunctionsValues& res, const CoordinatesValues& x) {
-	res[0] = 0.01 * (x[0] * x[1] + (x[0] - M_PI) * (x[0] - M_PI) + 3 * (x[1] - M_PI) * (x[1] - M_PI));
+	res[0] = 0.01 * (x[0] * x[1] + (x[0] - _PI) * (x[0] - _PI) + 3 * (x[1] - _PI) * (x[1] - _PI));
 	res[0] = res[0] - sin(x[0]) * sin(x[0]) * sin(2 * x[1]) * sin(2 * x[1]);
-	res[1] = 6 - (x[0] - M_PI + 0.1) * (x[0] - M_PI + 0.1);
+	res[1] = 6 - (x[0] - _PI + 0.1) * (x[0] - _PI + 0.1);
 	res[1] = res[1] - (2 * sin(x[1]) + 0.2) * (2 * sin(x[1]) + 0.2);
 
 	if (res[1] > 0) res[0] = res[0] - 1;

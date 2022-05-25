@@ -18,6 +18,9 @@ struct Parameters {
 
 	GainLipshConstant _Gain;
 	GainLipshConstant _Reduce;
+
+	double _Delta;
+	uint _iter_thr;
 };
 
 #endif // PARAMETERS_H

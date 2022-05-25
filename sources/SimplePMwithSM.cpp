@@ -90,3 +90,27 @@ void SimplePMwithSM::give_borders(double& l,
 		}
 	}
 }
+
+void SimplePMwithSM::update_minimum(const FunctionsValues& evals,
+									const uint& idp) {
+	if (!_areAllCharInfty) {
+		if (evals[0] < _current_minimum) {
+			bool flag = true;
+			for (uint i = 1; i < _constraints + 1; ++i)
+				if (evals[i] > 0) flag = false;
+
+			if (flag) {
+				_current_minimum = evals[0];
+				_id_minimum = idp;
+			}
+		}
+	}
+	else {
+		double candidate = *std::max_element(evals.begin() + 1, evals.end());
+
+		if (candidate < _current_minimum) {
+			_current_minimum = candidate;
+			_id_minimum = idp;
+		}
+	}
+}

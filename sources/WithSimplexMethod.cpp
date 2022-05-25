@@ -283,7 +283,7 @@ double WithSimplexMethod::get_solution() {
 
 	// objective function
 	MPObjective* const objective = solver->MutableObjective();
-	objective->SetCoefficient(L, 1);
+	objective->SetCoefficient(L, 1.0);
 	objective->SetMinimization();
 
 	solver->Solve();

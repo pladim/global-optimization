@@ -11,7 +11,8 @@ Hyperinterval::Hyperinterval() : _id(0),
 								 _diagonal(0.0),
 								 _charact(0.0),
 								 _localLipEvaluations(_constraints + 1),
-								 _maxLipEvaluations(_constraints + 1, 0) {
+								 _maxLipEvaluations(_constraints + 1, 0),
+								 _add_const(_constraints + 1) {
 	for (auto& elem : _localLipEvaluations)
 		for (uint i = 0; i < _queueDepth; ++i) elem.push(0.0);
 }
@@ -153,4 +154,15 @@ void Hyperinterval::find_maxLipEval() {
 const std::vector<LipschitzConstantValue>& 
 Hyperinterval::get_maxLipshEvaluations() const {
 	return _maxLipEvaluations;
+}
+
+void Hyperinterval::count_add_const(const double& ggobj, const double& ggcst) {
+	_add_const[0] = (ggobj - 1) * get_maxLipshEvaluations()[0];
+
+	for (uint i = 1; i < _constraints + 1; ++i)
+		_add_const[i] = (ggcst - 1) * get_maxLipshEvaluations()[i];
+}
+
+double Hyperinterval::get_add_const(const uint& function) const { 
+	return _add_const[function];
 }

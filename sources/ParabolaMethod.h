@@ -17,6 +17,8 @@ protected:
 	uint optimal_to_trisect() override;
 	uint iterate(const uint& id_hyp) override;
 	void balance(double& _lipshConst) const;
+	uint min_by_charact();
+	uint max_by_length();
 public:
 	ParabolaMethod(const uint& dimension,
 				   const uint& constraints,

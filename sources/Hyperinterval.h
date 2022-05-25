@@ -19,6 +19,8 @@ class Hyperinterval {
 	double _charact;
 	// длина активной диагонали гиперинтервала
 	double _diagonal;
+	// добавка, которая потом будет использована в аддитивном завышении глоабльной константы
+	std::vector<double> _add_const;
 
 	// очередь локальных оценок констант Липшица
 	std::vector<std::queue<LipschitzConstantValue>> _localLipEvaluations;
@@ -53,7 +55,10 @@ public:
 	uint get_evalB() const;
 	// получить значение характеристики гиперинтервала
 	double get_charact(const bool& = false) const;
-
+	// высчитать добавочную константу
+	void count_add_const(const double& ggobj, const double& ggcst);
+	// получить добавочную константу
+	double get_add_const(const uint& function) const;
 	// установить идентификатор гиперинтервалу
 	void set_id(const uint&);
 	// установить идентификатор точки главной диагонали

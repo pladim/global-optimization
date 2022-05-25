@@ -12,7 +12,8 @@ Problem::Problem(const uint& dimension,
 	_right_borders(right_brd),
 	_problem(problem),
 	_decoded_point(dimension),
-	_function_values(constraints + 1) {}
+	_function_values(constraints + 1),
+	_true_min(dimension) {}
 
 FunctionsValues& Problem::f(const CoordinatesValues& out) {
 	return _problem(_function_values, out);
@@ -34,6 +35,10 @@ CoordinatesValues& Problem::decode_coordinates01(const EncodedCoordinates& out) 
 		_decoded_point[i] = static_cast<double>(out[i]) / static_cast<double>(MAX_POWER_THREE);
 
 	return _decoded_point;
+}
+
+void Problem::set_true_minimum(const CoordinatesValues& out) {
+	_true_min = out;
 }
 
 FunctionsValues& Problem::operator()(const EncodedCoordinates& out) {

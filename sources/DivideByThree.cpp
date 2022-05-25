@@ -19,7 +19,8 @@ DivideByThree::DivideByThree(const uint& dimension,
 	_id_minimum(0),
 	_divided_axis(0),
 	_max_it(parameters._max_it),
-	_iteration(0) {
+	_iteration(0),
+	_solved(false) {
 	Point::_dimension = _dimension;
 	Point::_constraints = _constraints;
 }
@@ -259,4 +260,15 @@ void DivideByThree::write_generated_intervals() {
 				out << _coords[_intervals[id_hyp].get_coordB() + i] << std::endl;
 		}
 	}
+}
+
+CoordinatesValues DivideByThree::get_min_point() {
+	CoordinatesValues min_point(_dimension);
+	Point& point = _points[_id_minimum];
+
+	for (uint i = 0; i < _dimension; ++i)
+		_transit1[i] = _coords[point.get_id_coord() + i];
+
+	min_point = _problem.decode_coordinates(_transit1);
+	return min_point;
 }

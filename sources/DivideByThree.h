@@ -43,6 +43,7 @@ protected:
     uint _max_it;
     // число итераций
     uint _iteration;
+    bool _solved;
 protected:
 	// создать первый гиперинтервал
 	void initialization();
@@ -82,6 +83,8 @@ public:
     void write_generated_intervals();
     uint get_gen() const { return _generated_points; }
     double get_min() const { return _current_minimum; }
+    bool solved() const { return _solved; }
+    CoordinatesValues get_min_point();
     virtual ~DivideByThree() {}
 };
 
