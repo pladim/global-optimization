@@ -9,6 +9,8 @@
 #include "Point.h"
 #include "Parameters.h"
 
+enum class Mode { stop_by_precision, test };
+
 class DivideByThree {
 protected:
     // параметры задачи
@@ -44,6 +46,8 @@ protected:
     // число итераций
     uint _iteration;
     bool _solved;
+    // режим, при котором запускается метод
+    Mode _state;
 protected:
 	// создать первый гиперинтервал
 	void initialization();

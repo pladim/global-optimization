@@ -19,6 +19,8 @@ protected:
 	void balance(double& _lipshConst) const;
 	uint min_by_charact();
 	uint max_by_length();
+	void show_info();
+	bool is_close_enough();
 public:
 	ParabolaMethod(const uint& dimension,
 				   const uint& constraints,

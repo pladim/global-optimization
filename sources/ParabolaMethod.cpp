@@ -153,47 +153,85 @@ void ParabolaMethod::solve() {
 	initialization();
 	uint id_current_interval = 0;
 	bool flag = true;
-	bool adflag = true;
 
-	for (_iteration = 0; ((_iteration < _max_it) && (adflag) && (flag)); ++_iteration) {
-		id_current_interval = iterate(id_current_interval);
-		Hyperinterval& hyp = _intervals[id_current_interval];
+	switch (_state) {
+	case Mode::stop_by_precision:
+		for (_iteration = 0; (_iteration < _max_it) && flag; ++_iteration) {
+			id_current_interval = iterate(id_current_interval);
+			Hyperinterval& hyp = _intervals[id_current_interval];
 
-		if (_intervals[id_current_interval].get_diagonal() < _parameters._eps)
-			adflag = false;
-
-		EncodedCoordinates ec(_dimension);
-		Point& point = _points[_id_minimum];
-		for (uint i = 0; i < _dimension; ++i)
-			ec[i] = _coords[point.get_id_coord() + i];
-		CoordinatesValues dc = _problem.decode_coordinates(ec);
-		CoordinatesValues tm = _problem.get_true_minimum();
-
-		double max_diff = std::fabs(-tm[0] + dc[0]);
-		for (uint j = 1; j < _dimension; ++j) {
-			double test_diff = std::fabs(-tm[j] + dc[j]);
-			if (max_diff < test_diff) max_diff = test_diff;
+			if (_intervals[id_current_interval].get_diagonal() < _parameters._eps)
+				flag = false;
 		}
 
-		if ((max_diff < sqrt(_parameters._Delta) * 2) && (flag)) {
-			flag = false;
-			std::cout << "SOLVED\n";
+		if (!flag) {
+			std::cout << "STOPPED BY PRECISION" << std::endl;
+			_solved = true;
 		}
+
+		break;
+	case Mode::test:
+		bool adflag = true;
+
+		for (_iteration = 0; ((_iteration < _max_it) && (adflag) && (flag)); ++_iteration) {
+			id_current_interval = iterate(id_current_interval);
+			Hyperinterval& hyp = _intervals[id_current_interval];
+
+			if (_intervals[id_current_interval].get_diagonal() < _parameters._eps)
+				adflag = false;
+
+			if (is_close_enough()) {
+				flag = false;
+				_solved = true;
+				std::cout << "SOLVED FOR TEST" << std::endl;
+			}
+		}
+
+		if (!adflag) {
+			std::cout << "STOPPED BY PRECISION" << std::endl;
+		}
+
+		break;
 	}
 
-	if (!flag) {
-		std::cout << "STOPPED BY PRECISION" << std::endl;
-		_solved = true;
-	}
+	show_info();
+}
 
-	std::cout << "Current minimum: " << _current_minimum << std::endl;
+bool ParabolaMethod::is_close_enough() {
 	EncodedCoordinates ec(_dimension);
 	Point& point = _points[_id_minimum];
+
 	for (uint i = 0; i < _dimension; ++i)
 		ec[i] = _coords[point.get_id_coord() + i];
+
 	CoordinatesValues dc = _problem.decode_coordinates(ec);
+	CoordinatesValues tm = _problem.get_true_minimum();
+
+	double max_diff = std::fabs(-tm[0] + dc[0]);
+
+	for (uint j = 1; j < _dimension; ++j) {
+		double test_diff = std::fabs(-tm[j] + dc[j]);
+		if (max_diff < test_diff) max_diff = test_diff;
+	}
+
+	if (max_diff < sqrt(_parameters._Delta) * 2) return true;
+	else return false;
+}
+
+void ParabolaMethod::show_info() {
+	std::cout << "Current minimum: " << _current_minimum << std::endl;
+
+	EncodedCoordinates ec(_dimension);
+	Point& point = _points[_id_minimum];
+
+	for (uint i = 0; i < _dimension; ++i)
+		ec[i] = _coords[point.get_id_coord() + i];
+
+	CoordinatesValues dc = _problem.decode_coordinates(ec);
+
 	std::cout << "Point: " << std::endl;
 	for (uint i = 0; i < _dimension; ++i)
 		std::cout << dc[i] << std::endl;
+
 	std::cout << "Num of evaluations: " << _generated_points << std::endl;
 }

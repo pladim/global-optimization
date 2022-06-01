@@ -20,7 +20,8 @@ DivideByThree::DivideByThree(const uint& dimension,
 	_divided_axis(0),
 	_max_it(parameters._max_it),
 	_iteration(0),
-	_solved(false) {
+	_solved(false),
+	_state(parameters._state) {
 	Point::_dimension = _dimension;
 	Point::_constraints = _constraints;
 }

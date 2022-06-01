@@ -21,6 +21,8 @@ struct Parameters {
 
 	double _Delta;
 	uint _iter_thr;
+
+	Mode _state;
 };
 
 #endif // PARAMETERS_H
