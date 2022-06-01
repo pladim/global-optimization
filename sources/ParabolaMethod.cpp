@@ -47,8 +47,6 @@ void ParabolaMethod::calculate_globalLipshConst(const uint& id_hyp) {
 	for (uint i = 0; i < _generated_intervals; ++i)
 		if (_intervals[i].get_charact() < std::numeric_limits<double>::max())
 			_areAllCharInfty = false;
-
-	if (_areAllCharInfty) printf("yes\n");
 }
 
 double ParabolaMethod::mixedLipEval(const Hyperinterval& hyp, const uint& i) {
@@ -70,7 +68,10 @@ double ParabolaMethod::mixedLipEval(const Hyperinterval& hyp, const uint& i) {
 
 	if (_iteration >= _parameters._iter_thr) {
 		gained_global = _globalLipshEval[i] + hyp.get_add_const(i);
-		gained_local = gain_local * hyp.get_maxLipshEvaluations()[i];
+		gained_local = std::min(
+				gain_local * hyp.get_maxLipshEvaluations()[i],
+				hyp.get_maxLipshEvaluations()[i] + hyp.get_add_const(i)
+			);
 	}
 	else {
 		gained_global = gain_global * _globalLipshEval[i];
@@ -152,15 +153,16 @@ void ParabolaMethod::solve() {
 	initialization();
 	uint id_current_interval = 0;
 	bool flag = true;
+	bool adflag = true;
 
-	for (_iteration = 0; ((_iteration < _max_it) && (flag)); ++_iteration) {
+	for (_iteration = 0; ((_iteration < _max_it) && (adflag) && (flag)); ++_iteration) {
 		id_current_interval = iterate(id_current_interval);
 		Hyperinterval& hyp = _intervals[id_current_interval];
 
 		if (_intervals[id_current_interval].get_diagonal() < _parameters._eps)
-			flag = false;
+			adflag = false;
 
-		/*EncodedCoordinates ec(_dimension);
+		EncodedCoordinates ec(_dimension);
 		Point& point = _points[_id_minimum];
 		for (uint i = 0; i < _dimension; ++i)
 			ec[i] = _coords[point.get_id_coord() + i];
@@ -173,9 +175,10 @@ void ParabolaMethod::solve() {
 			if (max_diff < test_diff) max_diff = test_diff;
 		}
 
-		if (max_diff < sqrt(_parameters._Delta) * 2) {
+		if ((max_diff < sqrt(_parameters._Delta) * 2) && (flag)) {
 			flag = false;
-		}*/
+			std::cout << "SOLVED\n";
+		}
 	}
 
 	if (!flag) {

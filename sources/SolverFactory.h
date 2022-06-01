@@ -10,6 +10,8 @@
 #include "SimplePMwithConj.h"
 #include "SimplePMwithLagrange.h"
 #include "TransformPMwithSM.h"
+#include "Simple.h"
+#include "Transform.h"
 
 using std::shared_ptr;
 
@@ -30,6 +32,10 @@ static shared_ptr<DivideByThree> create_solver(const std::string& name,
 	//	return std::make_shared<TransformPMwithConj>(dim, cst, param, problem);
 	if (name == "SimplexMethodT")
 		return std::make_shared<TransformPMwithSM>(dim, cst, param, problem);
+	if (name == "PiyavskiiS")
+		return std::make_shared<Simple>(dim, cst, param, problem);
+	if (name == "PiyavskiiT")
+		return std::make_shared<Transform>(dim, cst, param, problem);
 	//if (name == "Sync")
 	//	return std::make_shared<SyncPM>(dim, cst, param, problem);
 

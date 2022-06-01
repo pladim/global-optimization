@@ -35,6 +35,7 @@ Hyperinterval& Hyperinterval::operator=(const Hyperinterval& hyperinterval) {
 	_divisions = hyperinterval._divisions;
 	_diagonal = hyperinterval._diagonal;
 	_charact = hyperinterval._charact;
+	_add_const = hyperinterval._add_const;
 	_localLipEvaluations = hyperinterval._localLipEvaluations;
 	_maxLipEvaluations = hyperinterval._maxLipEvaluations;
 	return *this;
