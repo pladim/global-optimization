@@ -2,12 +2,14 @@
 #define TESTER_H
 
 #include <vector>
+#include <memory>
 
-#include "SolverFactory.h"
-#include "Functions.h"
+#include "Parameters.h"
+
+class DivideByThree;
 
 class Tester {
-	shared_ptr<DivideByThree> _solver;
+	std::shared_ptr<DivideByThree> _solver;
 	std::string _name_of_method;
 	Parameters _parameters;
 	std::vector<uint> _measurements;
@@ -21,7 +23,8 @@ private:
 	void solve_6();
 	void solve_gen(const int& task);
 public:
-	Tester();
+	Tester(const std::string& name_of_method,
+		   const Parameters& parameters);
 	void start_testing();
 	std::vector<uint> get_measurements();
 	void write_measurements_to_file();

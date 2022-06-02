@@ -1,8 +1,13 @@
 #include <fstream>
 
 #include "Tester.h"
+#include "Functions.h"
+#include "SolverFactory.h"
 
-Tester::Tester() {
+Tester::Tester(const std::string& name_of_method,
+			   const Parameters& parameters) :
+	_name_of_method(name_of_method),
+	_parameters(parameters) {
 	init_dll();
 }
 
@@ -12,6 +17,11 @@ void Tester::start_testing() {
 
 	uint dim{ static_cast<uint>(__GetDim()) };
 	uint cst{ static_cast<uint>(__GetCountCondition()) };
+
+	uint dm = _parameters._dimension;
+	uint ct = _parameters._constraints;
+	_parameters._dimension = dim;
+	_parameters._constraints = cst;
 
 	for (int i = 1; i < 101; ++i) {
 		generate_task(i);
@@ -40,6 +50,9 @@ void Tester::start_testing() {
 
 		std::cout << std::endl;
 	}
+
+	_parameters._dimension = dm;
+	_parameters._constraints = ct;
 }
 
 std::vector<uint> Tester::get_measurements() {
@@ -47,14 +60,16 @@ std::vector<uint> Tester::get_measurements() {
 }
 
 void Tester::write_measurements_to_file() {
-	std::string _path{ "..\\x64\\Release\\" };
-	_path = _path + _name_of_method + "_measurements.txt";
-	std::ofstream out;
-	out.open(_path);
+	if (_parameters._state == Mode::test) {
+		std::string _path{ "..\\x64\\Release\\" };
+		_path = _path + _name_of_method + "_measurements.txt";
+		std::ofstream out;
+		out.open(_path);
 
-	if (out.is_open()) {
-		for (auto& elem : _measurements)
-			out << elem << std::endl;
+		if (out.is_open()) {
+			for (auto& elem : _measurements)
+				out << elem << std::endl;
+		}
 	}
 }
 
@@ -272,13 +287,14 @@ void Tester::solve_task(const int& task) {
 			solve_6();
 			break;
 		default:
-			return;
+			break;
 		}
 	}
 }
 
 std::vector<double> Tester::get_distances() {
-	return _distances;
+	if (_parameters._state == Mode::stop_by_precision)
+		return _distances;
 }
 
 void Tester::write_distances_to_file() {

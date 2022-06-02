@@ -3,6 +3,8 @@
 
 #include "synonymous_types.h"
 
+enum class Mode;
+
 struct Parameters {
 	uint _dimension;
 	uint _constraints;
