@@ -82,16 +82,20 @@ void Simple::update_minimum(const FunctionsValues& evals,
 
 			if (flag) {
 				_current_minimum = evals[0];
+				calc_distance(idp);
 				_id_minimum = idp;
 			}
 		}
+		else calc_distance(_id_minimum);
 	}
 	else {
 		double candidate = *std::max_element(evals.begin() + 1, evals.end());
 
 		if (candidate < _current_minimum) {
 			_current_minimum = candidate;
+			calc_distance(idp);
 			_id_minimum = idp;
 		}
+		else calc_distance(_id_minimum);
 	}
 }

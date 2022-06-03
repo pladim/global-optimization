@@ -191,9 +191,11 @@ void DivideByThree::update_minimum(const FunctionsValues& evals,
 
 		if (flag) {
 			_current_minimum = evals[0];
+			calc_distance(idp);
 			_id_minimum = idp;
 		}
 	}
+	else calc_distance(_id_minimum);
 }
 
 void DivideByThree::compute_diagonal(const uint& id_hyp) {
@@ -216,6 +218,26 @@ void DivideByThree::compute_diagonal(const uint& id_hyp) {
 
 	diagonal = sqrt(diagonal);
 	hyp.set_diagonal(diagonal);
+}
+
+void DivideByThree::calc_distance(const uint& idx) {
+	Point& x = _points[_id_minimum];
+	Point& y = _points[idx];
+
+	for (uint i = 0; i < _dimension; ++i) {
+		_transit1[i] = _coords[x.get_id_coord() + i];
+		_transit2[i] = _coords[y.get_id_coord() + i];
+	}
+
+	CoordinatesValues xd{ _problem.decode_coordinates(_transit1) };
+	CoordinatesValues yd{ _problem.decode_coordinates(_transit2) };
+
+	double distance = 0.0;
+
+	for (uint i = 0; i < _dimension; ++i)
+		distance = distance + (yd[i] - xd[i]) * (yd[i] - xd[i]);
+
+	_distances.push_back(distance);
 }
 
 void DivideByThree::resize_points_deque() {

@@ -46,6 +46,8 @@ protected:
     // число итераций
     uint _iteration;
     bool _solved;
+    // вектор расстояний между оценками усл. глоб.-опт. значения с шага на шаг
+    std::vector<double> _distances;
     // режим, при котором запускается метод
     Mode _state;
 protected:
@@ -71,6 +73,8 @@ protected:
     virtual uint optimal_to_trisect() = 0;
     // сделать шаг метода
     virtual uint iterate(const uint& id_hyp) = 0;
+    // вычислить расстояние
+    void calc_distance(const uint& idx);
 protected:
     // методы расширения деков
     void resize_points_deque();
@@ -88,6 +92,7 @@ public:
     uint get_gen() const { return _generated_points; }
     double get_min() const { return _current_minimum; }
     bool solved() const { return _solved; }
+    std::vector<double> get_distances() { return _distances; }
     CoordinatesValues get_min_point();
     virtual ~DivideByThree() {}
 };

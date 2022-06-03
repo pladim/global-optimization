@@ -51,6 +51,8 @@ void Tester::start_testing() {
 		std::cout << std::endl;
 	}
 
+	write_measurements_to_file();
+
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
 }
@@ -95,6 +97,9 @@ void Tester::solve_1() {
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
 
+	_distances = _solver->get_distances();
+	write_distances_to_file();
+
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
 }
@@ -120,6 +125,9 @@ void Tester::solve_2() {
 	_solver->solve();
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
+
+	_distances = _solver->get_distances();
+	write_distances_to_file();
 
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
@@ -147,6 +155,9 @@ void Tester::solve_3() {
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
 
+	_distances = _solver->get_distances();
+	write_distances_to_file();
+
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
 }
@@ -172,6 +183,9 @@ void Tester::solve_4() {
 	_solver->solve();
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
+
+	_distances = _solver->get_distances();
+	write_distances_to_file();
 
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
@@ -199,6 +213,9 @@ void Tester::solve_5() {
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
 
+	_distances = _solver->get_distances();
+	write_distances_to_file();
+
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
 }
@@ -224,6 +241,9 @@ void Tester::solve_6() {
 	_solver->solve();
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
+
+	_distances = _solver->get_distances();
+	write_distances_to_file();
 
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
@@ -257,6 +277,9 @@ void Tester::solve_gen(const int& task) {
 	_solver->solve();
 	_solver->write_generated_points();
 	_solver->write_generated_intervals();
+
+	_distances = _solver->get_distances();
+	write_distances_to_file();
 
 	_parameters._dimension = dm;
 	_parameters._constraints = ct;
