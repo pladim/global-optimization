@@ -20,3 +20,17 @@ void Piyavskii::calculate_localLipshConst(const uint& id_hyp) {
 		_parameters._delta / ((double)MAX_POWER_THREE * (double)MAX_POWER_THREE)
 	);
 }
+
+uint Piyavskii::iterate(const uint& id_hyp) {
+	if (_iteration == _parameters._iter_thr)
+		for (uint i = 0; i < _generated_intervals; ++i)
+			_intervals[i].count_add_const(_parameters._gainGlobalObj,
+				_parameters._gainGlobalCst
+			);
+	trisect_interval(id_hyp);
+	calculate_localLipshConst(id_hyp);
+	calculate_localLipshConst(_generated_intervals - 2);
+	calculate_localLipshConst(_generated_intervals - 1);
+	calculate_globalLipshConst(id_hyp);
+	return optimal_to_trisect();
+}

@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include <iostream>
 
 Transform::Transform(const uint& dimension,
 					 const uint& constraints,
@@ -77,7 +78,7 @@ double Transform::calculate_residual(const double& t, const double& e,
 }
 
 void Transform::update_minimum(const FunctionsValues& evals,
-	const uint& idp) {
+							   const uint& idp) {
 	if (evals[0] < _current_minimum) {
 		bool flag = true;
 		for (uint i = 1; i < _constraints + 1; ++i)
@@ -88,7 +89,15 @@ void Transform::update_minimum(const FunctionsValues& evals,
 			calc_distance(idp);
 			_id_minimum = idp;
 			update_all_charact();
+			_changes = 0;
+		}
+		else {
+			calc_distance(_id_minimum);
+			++_changes;
 		}
 	}
-	else calc_distance(_id_minimum);
+	else {
+		calc_distance(_id_minimum);
+		++_changes;
+	}
 }

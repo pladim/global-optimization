@@ -80,7 +80,15 @@ void TransformPMwithSM::update_minimum(const FunctionsValues& evals,
 			calc_distance(idp);
 			_id_minimum = idp;
 			update_all_charact();
+			_changes = 0;
+		}
+		else {
+			calc_distance(_id_minimum);
+			++_changes;
 		}
 	}
-	else calc_distance(_id_minimum);
+	else {
+		calc_distance(_id_minimum);
+		++_changes;
+	}
 }

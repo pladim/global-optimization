@@ -15,10 +15,12 @@ protected:
 	double mixedLipEval(const Hyperinterval& hyp, const uint& i);
 	void update_all_charact();
 	uint optimal_to_trisect() override;
-	uint iterate(const uint& id_hyp) override;
+	virtual uint iterate(const uint& id_hyp) override;
 	void balance(double& _lipshConst) const;
 	uint min_by_charact();
 	uint max_by_length();
+	uint maxmin_lenchar();
+	uint supplementary();
 	void show_info();
 	bool is_close_enough();
 public:

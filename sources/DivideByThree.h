@@ -50,6 +50,8 @@ protected:
     std::vector<double> _distances;
     // режим, при котором запускается метод
     Mode _state;
+    // счётчик, отслеживающий сколько раз не менялся глобальный минимум
+    uint _changes;
 protected:
 	// создать первый гиперинтервал
 	void initialization();

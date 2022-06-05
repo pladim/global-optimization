@@ -6,6 +6,7 @@
 class Piyavskii : public ParabolaMethod {
 protected:
 	void calculate_localLipshConst(const uint& id_hyp) override;
+	uint iterate(const uint& id_hyp) override;
 public:
 	Piyavskii(const uint& dimension,
 			  const uint& constraints,

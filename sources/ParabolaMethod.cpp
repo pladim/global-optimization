@@ -125,9 +125,46 @@ uint ParabolaMethod::max_by_length() {
 	return id_optimal_hyp;
 }
 
+uint ParabolaMethod::maxmin_lenchar() {
+	auto it = std::max_element(
+		_intervals.begin(),
+		_intervals.end(),
+		[](const Hyperinterval& h1, const Hyperinterval& h2) { return h1.get_diagonal() < h2.get_diagonal(); }
+	);
+
+	auto jt = std::min_element(
+		_intervals.begin(),
+		_intervals.end(),
+		[&](const Hyperinterval& h1, const Hyperinterval& h2) { 
+			if (std::abs(h1.get_diagonal() - it->get_diagonal()) < std::numeric_limits<double>::epsilon())
+				return h1.get_charact() < it->get_charact();
+			else return false;
+		}
+	);
+
+	return jt->get_id();
+}
+
+uint ParabolaMethod::supplementary() {
+	std::vector<uint> cds;
+
+	for (uint i = 0; i < _generated_intervals; ++i)
+		if ((_intervals[i].get_idA() == _id_minimum) || (_intervals[i].get_idB() == _id_minimum))
+			cds.push_back(i);
+
+	auto it = std::min_element(
+		cds.begin(),
+		cds.end(),
+		[&](const uint& i1, const uint& i2) { return _intervals[i1].get_charact() < _intervals[i2].get_charact(); }
+	);
+
+	return *it;
+}
+
 uint ParabolaMethod::optimal_to_trisect() {
 	if (_areAllCharInfty) return max_by_length();
-	if (_iteration % 10 == 0) return max_by_length();
+	if (_iteration % 15 == 0) return maxmin_lenchar();
+	if (_changes > 100) return supplementary();
 
 	return min_by_charact();
 }

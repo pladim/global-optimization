@@ -21,7 +21,8 @@ DivideByThree::DivideByThree(const uint& dimension,
 	_max_it(parameters._max_it),
 	_iteration(0),
 	_solved(false),
-	_state(parameters._state) {
+	_state(parameters._state),
+	_changes(0) {
 	Point::_dimension = _dimension;
 	Point::_constraints = _constraints;
 }
@@ -223,14 +224,16 @@ void DivideByThree::compute_diagonal(const uint& id_hyp) {
 void DivideByThree::calc_distance(const uint& idx) {
 	Point& x = _points[_id_minimum];
 	Point& y = _points[idx];
+	EncodedCoordinates tr1(_dimension);
+	EncodedCoordinates tr2(_dimension);
 
 	for (uint i = 0; i < _dimension; ++i) {
-		_transit1[i] = _coords[x.get_id_coord() + i];
-		_transit2[i] = _coords[y.get_id_coord() + i];
+		tr1[i] = _coords[x.get_id_coord() + i];
+		tr2[i] = _coords[y.get_id_coord() + i];
 	}
 
-	CoordinatesValues xd{ _problem.decode_coordinates(_transit1) };
-	CoordinatesValues yd{ _problem.decode_coordinates(_transit2) };
+	CoordinatesValues xd{ _problem.decode_coordinates(tr1) };
+	CoordinatesValues yd{ _problem.decode_coordinates(tr2) };
 
 	double distance = 0.0;
 

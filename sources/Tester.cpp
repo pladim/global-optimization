@@ -9,19 +9,20 @@ Tester::Tester(const std::string& name_of_method,
 	_name_of_method(name_of_method),
 	_parameters(parameters) {
 	init_dll();
-}
 
-void Tester::start_testing() {
 	GKLSG_Int_Void __GetDim = (GKLSG_Int_Void)GetProcAddress(hDLL, "GetDim");
 	GKLSG_Int_Void __GetCountCondition = (GKLSG_Int_Void)GetProcAddress(hDLL, "GetCountCondition");
 
 	uint dim{ static_cast<uint>(__GetDim()) };
 	uint cst{ static_cast<uint>(__GetCountCondition()) };
 
-	uint dm = _parameters._dimension;
-	uint ct = _parameters._constraints;
 	_parameters._dimension = dim;
 	_parameters._constraints = cst;
+	_parameters._eps = sqrtl(static_cast<double>(dim)) * 1.0 + 0.5;
+}
+
+void Tester::start_testing() {
+	if (_parameters._state != Mode::test) return;
 
 	for (int i = 1; i < 101; ++i) {
 		generate_task(i);
@@ -34,7 +35,7 @@ void Tester::start_testing() {
 		for (auto& elem : solution_point)
 			std::cout << elem << std::endl;
 
-		Problem testDll(dim, cst, { -1, -1 }, { 1, 1 }, &test_dll);
+		Problem testDll(_parameters._dimension, _parameters._constraints, { -1, -1 }, { 1, 1 }, &test_dll);
 		testDll.set_true_minimum(solution_point);
 
 		_solver = create_solver(
@@ -52,9 +53,6 @@ void Tester::start_testing() {
 	}
 
 	write_measurements_to_file();
-
-	_parameters._dimension = dm;
-	_parameters._constraints = ct;
 }
 
 std::vector<uint> Tester::get_measurements() {
@@ -90,6 +88,7 @@ void Tester::solve_1() {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim_t1;
 	_parameters._constraints = cst_t1;
+	_parameters._eps = sqrtl(static_cast<double>(dim_t1)) * 1.0 + 0.5;
 
 	_solver = create_solver(_name_of_method, dim_t1, cst_t1, _parameters, testProblem1);
 
@@ -119,6 +118,7 @@ void Tester::solve_2() {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim_t2;
 	_parameters._constraints = cst_t2;
+	_parameters._eps = sqrtl(static_cast<double>(dim_t2)) * 1.0 + 0.5;
 
 	_solver = create_solver(_name_of_method, dim_t2, cst_t2, _parameters, testProblem2);
 
@@ -148,6 +148,7 @@ void Tester::solve_3() {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim_t3;
 	_parameters._constraints = cst_t3;
+	_parameters._eps = sqrtl(static_cast<double>(dim_t3)) * 1.0 + 0.5;
 
 	_solver = create_solver(_name_of_method, dim_t3, cst_t3, _parameters, testProblem3);
 
@@ -177,6 +178,7 @@ void Tester::solve_4() {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim_t4;
 	_parameters._constraints = cst_t4;
+	_parameters._eps = sqrtl(static_cast<double>(dim_t4)) * 1.0 + 0.5;
 
 	_solver = create_solver(_name_of_method, dim_t4, cst_t4, _parameters, testProblem4);
 
@@ -206,6 +208,7 @@ void Tester::solve_5() {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim_t5;
 	_parameters._constraints = cst_t5;
+	_parameters._eps = sqrtl(static_cast<double>(dim_t5)) * 1.0 + 1.5;
 
 	_solver = create_solver(_name_of_method, dim_t5, cst_t5, _parameters, testProblem5);
 
@@ -235,6 +238,7 @@ void Tester::solve_6() {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim_t6;
 	_parameters._constraints = cst_t6;
+	_parameters._eps = sqrtl(static_cast<double>(dim_t6)) * 1.0 + 0.5;
 
 	_solver = create_solver(_name_of_method, dim_t6, cst_t6, _parameters, testProblem6);
 
@@ -270,6 +274,7 @@ void Tester::solve_gen(const int& task) {
 	uint ct = _parameters._constraints;
 	_parameters._dimension = dim;
 	_parameters._constraints = cst;
+	_parameters._eps = sqrtl(static_cast<double>(dim)) * 1.0 + 0.5;
 
 	Problem testDll(dim, cst, { -1, -1 }, { 1, 1 }, &test_dll);
 	_solver = create_solver(_name_of_method, dim, cst, _parameters, testDll);

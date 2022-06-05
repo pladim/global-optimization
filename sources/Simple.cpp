@@ -1,4 +1,5 @@
 #include "Simple.h"
+#include <iostream>
 
 Simple::Simple(const uint& dimension,
 			   const uint& constraints,
@@ -84,9 +85,17 @@ void Simple::update_minimum(const FunctionsValues& evals,
 				_current_minimum = evals[0];
 				calc_distance(idp);
 				_id_minimum = idp;
+				_changes = 0;
+			}
+			else {
+				calc_distance(_id_minimum);
+				++_changes;
 			}
 		}
-		else calc_distance(_id_minimum);
+		else {
+			calc_distance(_id_minimum);
+			++_changes;
+		}
 	}
 	else {
 		double candidate = *std::max_element(evals.begin() + 1, evals.end());
@@ -95,7 +104,11 @@ void Simple::update_minimum(const FunctionsValues& evals,
 			_current_minimum = candidate;
 			calc_distance(idp);
 			_id_minimum = idp;
+			_changes = 0;
 		}
-		else calc_distance(_id_minimum);
+		else {
+			calc_distance(_id_minimum);
+			++_changes;
+		}
 	}
 }
