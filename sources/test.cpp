@@ -7,11 +7,11 @@ int main() {
 	uint dep{ 3 };
 	uint dim{ 4 };
 	uint cst{ 4 };
-	uint max_iter{ 5000 };
-	double globalObj{ 4.0 };
-	double globalCst{ 4.0 };
-	double localObj{ 2.5 };
-	double localCst{ 2.5 };
+	uint max_iter{ 500 };
+	double globalObj{ 2.5 };
+	double globalCst{ 2.5 };
+	double localObj{ 1.2 };
+	double localCst{ 1.2 };
 	double delta{ 1e-10 };
 	double beta{ 0.4 };
 	double eps{ sqrt(static_cast<double>(dim)) + 0.1 };

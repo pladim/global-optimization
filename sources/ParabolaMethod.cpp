@@ -92,37 +92,33 @@ void ParabolaMethod::update_all_charact() {
 }
 
 uint ParabolaMethod::min_by_charact() {
-	uint id_optimal_hyp = 0;
-	double optimal_charact = _intervals[id_optimal_hyp].get_charact();
-	double current_charact = 0.0;
-
-	for (uint id_hyp = 1; id_hyp < _generated_intervals; ++id_hyp) {
-		current_charact = _intervals[id_hyp].get_charact();
-		if (std::abs(current_charact - optimal_charact) < std::numeric_limits<double>::epsilon());
-		else if (optimal_charact > current_charact) {
-			optimal_charact = current_charact;
-			id_optimal_hyp = id_hyp;
+	auto it = std::min_element(
+		_intervals.begin(),
+		_intervals.end(),
+		[&](const Hyperinterval& h1, const Hyperinterval& h2) {
+			if ((h1.get_divisions() == MAX_EXPONENT_THREE * _dimension) || (h2.get_divisions() == MAX_EXPONENT_THREE * _dimension))
+				return false;
+			return h1.get_charact() < h2.get_charact();
 		}
-	}
+	);
 
-	return id_optimal_hyp;
+	if (it == _intervals.end()) return _generated_intervals + 1;
+	return it->get_id();
 }
 
 uint ParabolaMethod::max_by_length() {
-	uint id_optimal_hyp = 0;
-	double optimal_charact = _intervals[id_optimal_hyp].get_diagonal();
-	double current_charact = 0.0;
-
-	for (uint id_hyp = 1; id_hyp < _generated_intervals; ++id_hyp) {
-		current_charact = _intervals[id_hyp].get_diagonal();
-		if (std::abs(current_charact - optimal_charact) < std::numeric_limits<double>::epsilon());
-		else if (optimal_charact < current_charact) {
-			optimal_charact = current_charact;
-			id_optimal_hyp = id_hyp;
+	auto it = std::max_element(
+		_intervals.begin(),
+		_intervals.end(),
+		[&](const Hyperinterval& h1, const Hyperinterval& h2) {
+			if ((h1.get_divisions() == MAX_EXPONENT_THREE * _dimension) || (h2.get_divisions() == MAX_EXPONENT_THREE * _dimension))
+				return false;
+			return h1.get_diagonal() < h2.get_diagonal();
 		}
-	}
+	);
 
-	return id_optimal_hyp;
+	if (it == _intervals.end()) return _generated_intervals + 1;
+	return it->get_id();
 }
 
 uint ParabolaMethod::maxmin_lenchar() {
@@ -136,12 +132,16 @@ uint ParabolaMethod::maxmin_lenchar() {
 		_intervals.begin(),
 		_intervals.end(),
 		[&](const Hyperinterval& h1, const Hyperinterval& h2) { 
+			if ((h1.get_divisions() == MAX_EXPONENT_THREE * _dimension) || (h2.get_divisions() == MAX_EXPONENT_THREE * _dimension))
+				return false;
+
 			if (std::abs(h1.get_diagonal() - it->get_diagonal()) < std::numeric_limits<double>::epsilon())
 				return h1.get_charact() < it->get_charact();
 			else return false;
 		}
 	);
 
+	if (jt == _intervals.end()) return _generated_intervals + 1;
 	return jt->get_id();
 }
 
@@ -155,9 +155,14 @@ uint ParabolaMethod::supplementary() {
 	auto it = std::min_element(
 		cds.begin(),
 		cds.end(),
-		[&](const uint& i1, const uint& i2) { return _intervals[i1].get_charact() < _intervals[i2].get_charact(); }
+		[&](const uint& i1, const uint& i2) {
+			if ((_intervals[i1].get_divisions() == MAX_EXPONENT_THREE * _dimension) || (_intervals[i2].get_divisions() == MAX_EXPONENT_THREE * _dimension))
+				return false;
+			return _intervals[i1].get_charact() < _intervals[i2].get_charact(); 
+		}
 	);
 
+	if (it == cds.end()) return _generated_intervals + 1;
 	return *it;
 }
 
@@ -195,6 +200,7 @@ void ParabolaMethod::solve() {
 	case Mode::stop_by_precision:
 		for (_iteration = 0; (_iteration < _max_it) && flag; ++_iteration) {
 			id_current_interval = iterate(id_current_interval);
+			if (id_current_interval == _generated_intervals + 1) break;
 			Hyperinterval& hyp = _intervals[id_current_interval];
 
 			if (_intervals[id_current_interval].get_diagonal() < _parameters._eps)
@@ -212,6 +218,7 @@ void ParabolaMethod::solve() {
 
 		for (_iteration = 0; ((_iteration < _max_it) && (adflag) && (flag)); ++_iteration) {
 			id_current_interval = iterate(id_current_interval);
+			if (id_current_interval == _generated_intervals + 1) break;
 			Hyperinterval& hyp = _intervals[id_current_interval];
 
 			if (_intervals[id_current_interval].get_diagonal() < _parameters._eps)
